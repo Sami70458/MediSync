@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+
+.neon-glow {
+  text-shadow: 0 0 8px #ff00ff, 0 0 20px #ff00ff;
+}
+
+.nav-link {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 8px 16px;
+  transition: all 0.3s ease-in-out;
+}
+
+.nav-link:hover {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+}
+
+
+
+.cta-btn {
+  background: linear-gradient(90deg, #ff00ff, #ff0077);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 10px #ff00ff;
+}
+
+.cta-btn:hover {
+  box-shadow: 0 0 20px #ff0077;
+  transform: scale(1.05);
+}
+
+.cta-btn-secondary {
+  background: transparent;
+  border: 2px solid #ff00ff;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.cta-btn-secondary:hover {
+  background: #ff00ff;
+  box-shadow: 0 0 20px #ff0077;
+}
+
+.neon-glow {
+  text-shadow: 0 0 10px #ff00ff, 0 0 20px #ff0077;
+}
