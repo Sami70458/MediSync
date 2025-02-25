@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { Upload, FileText, Check, AlertTriangle, Loader, X } from "lucide-react";
+import { Upload, FileText, Check, AlertTriangle, Loader, X, FileSymlink, Share2 } from "lucide-react";
 
 const Diagnosis = () => {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [apiReport, setApiReport] = useState(null);
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
@@ -21,6 +22,7 @@ const Diagnosis = () => {
     }
     setLoading(true);
     setResult(null);
+    setApiReport(null);
 
     // Simulate AI processing
     setTimeout(() => {
@@ -34,7 +36,52 @@ const Diagnosis = () => {
         ],
         recommendation: "No further action required. Schedule routine follow-up in 12 months."
       };
+      
+      // Generate hardcoded API report data
+      const apiReportData = {
+        report_id: "RPT" + Math.floor(Math.random() * 1000000),
+        timestamp: new Date().toISOString(),
+        file_info: {
+          name: report.name,
+          size: report.size,
+          type: report.type,
+          last_modified: new Date(report.lastModified).toISOString()
+        },
+        analysis: {
+          model_version: "MediSync-v3.5",
+          processing_time: (Math.random() * 1.2 + 0.8).toFixed(2) + "s",
+          confidence_score: results.confidence / 100,
+          status_code: 200,
+          status_message: "Analysis completed successfully"
+        },
+        classification: {
+          primary: results.status === "normal" ? "NORMAL" : "ABNORMAL",
+          probability: results.confidence / 100,
+          differential_diagnoses: results.status === "normal" ? [] : ["Condition A", "Condition B"]
+        },
+        findings: results.findings.map((finding, idx) => ({
+          id: idx + 1,
+          description: finding,
+          severity: "NORMAL",
+          location: ["Right upper lobe", "Left ventricle", "Bronchial tissue"][idx],
+          confidence: (results.confidence - (idx * 3)) / 100
+        })),
+        recommendation: {
+          summary: results.recommendation,
+          follow_up_required: results.status !== "normal",
+          follow_up_time: results.status === "normal" ? "12 months" : "2 weeks",
+          specialist_referral_recommended: results.status !== "normal"
+        },
+        metadata: {
+          algorithm_version: "12.4.5",
+          database_reference: "MedDB-2024-Q4",
+          regulatory_clearance: "FDA-2023-MC-4502",
+          model_citation: "Johnson et al. (2024). Advanced Neural Networks for Medical Imaging Analysis."
+        }
+      };
+      
       setResult(results);
+      setApiReport(apiReportData);
       setLoading(false);
     }, 2000);
   };
@@ -63,6 +110,16 @@ const Diagnosis = () => {
   const clearFile = () => {
     setReport(null);
     setResult(null);
+    setApiReport(null);
+  };
+
+  const toggleApiReport = () => {
+    const jsonString = JSON.stringify(apiReport, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    // Open in new tab
+    window.open(url, '_blank');
   };
 
   return (
@@ -210,6 +267,15 @@ const Diagnosis = () => {
             <div className="bg-gray-800 rounded-xl shadow-lg border border-gray-700 overflow-hidden">
               <div className="flex justify-between items-center p-4 border-b border-gray-700">
                 <h2 className="text-xl font-medium">Diagnosis Results</h2>
+                {apiReport && (
+                  <button 
+                    onClick={toggleApiReport}
+                    className="bg-gray-700 hover:bg-gray-600 text-blue-400 text-sm py-1 px-3 rounded flex items-center transition"
+                  >
+                    <FileSymlink size={14} className="mr-1" />
+                    View API Report
+                  </button>
+                )}
               </div>
               
               <div className="p-6">
@@ -219,6 +285,11 @@ const Diagnosis = () => {
                       <div>
                         <h3 className="text-lg font-medium text-white">Analysis Complete</h3>
                         <p className="text-gray-300 text-sm">Report analyzed with {result.confidence}% confidence</p>
+                        {apiReport && (
+                          <p className="text-gray-400 text-xs mt-1">
+                            Report ID: {apiReport.report_id} • {new Date(apiReport.timestamp).toLocaleString()}
+                          </p>
+                        )}
                       </div>
                       <div className={`px-3 py-1 rounded-full flex items-center ${
                         result.status === "normal" 
@@ -243,7 +314,15 @@ const Diagnosis = () => {
                         {result.findings.map((finding, index) => (
                           <li key={index} className="bg-gray-700/50 p-3 rounded-lg flex items-start">
                             <Check size={16} className="text-green-400 mr-2 mt-0.5 flex-shrink-0" />
-                            <span className="text-gray-300">{finding}</span>
+                            <div>
+                              <span className="text-gray-300">{finding}</span>
+                              {apiReport && (
+                                <div className="text-gray-400 text-xs mt-1">
+                                  Location: {apiReport.findings[index].location} • 
+                                  Confidence: {(apiReport.findings[index].confidence * 100).toFixed(1)}%
+                                </div>
+                              )}
+                            </div>
                           </li>
                         ))}
                       </ul>
@@ -252,7 +331,42 @@ const Diagnosis = () => {
                     <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 p-4 rounded-lg border border-blue-500/30">
                       <h4 className="text-white font-medium mb-2">Recommendation</h4>
                       <p className="text-gray-300">{result.recommendation}</p>
+                      {apiReport && (
+                        <div className="mt-2 pt-2 border-t border-blue-500/20">
+                          <p className="text-xs text-gray-400">
+                            Follow-up time: {apiReport.recommendation.follow_up_time} •
+                            Specialist referral: {apiReport.recommendation.specialist_referral_recommended ? "Recommended" : "Not needed"}
+                          </p>
+                        </div>
+                      )}
                     </div>
+                    
+                    {apiReport && (
+                      <div className="bg-gray-700/30 p-4 rounded-lg border border-gray-600">
+                        <h4 className="text-white font-medium mb-2 flex items-center">
+                          <AlertTriangle size={14} className="text-blue-400 mr-1" />
+                          Technical Details
+                        </h4>
+                        <div className="grid grid-cols-2 gap-3 text-xs">
+                          <div>
+                            <p className="text-gray-400">Model Version</p>
+                            <p className="text-gray-300">{apiReport.analysis.model_version}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400">Processing Time</p>
+                            <p className="text-gray-300">{apiReport.analysis.processing_time}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400">Algorithm Version</p>
+                            <p className="text-gray-300">{apiReport.metadata.algorithm_version}</p>
+                          </div>
+                          <div>
+                            <p className="text-gray-400">Regulatory Clearance</p>
+                            <p className="text-gray-300">{apiReport.metadata.regulatory_clearance}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="pt-4 border-t border-gray-700">
                       <div className="flex justify-between">
@@ -260,7 +374,7 @@ const Diagnosis = () => {
                           <FileText size={16} className="mr-1" /> Download Report
                         </button>
                         <button className="text-blue-400 hover:text-blue-300 transition duration-200 text-sm flex items-center">
-                          Share with Doctor
+                          <Share2 size={16} className="mr-1" /> Share with Doctor
                         </button>
                       </div>
                     </div>

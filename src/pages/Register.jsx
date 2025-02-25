@@ -10,13 +10,35 @@ const Register = () => {
     confirmPassword: "",
   });
 
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("User Registered:", formData);
+    setError(null);
+    setSuccess(null);
+
+    const response = await fetch("http://127.0.0.1:5000/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+    if (response.ok) {
+      setSuccess("Signup successful! Redirecting...");
+      setTimeout(() => {
+        window.location.href = "/login"; // Redirect after success
+      }, 2000);
+    } else {
+      setError(data.error || "Signup failed");
+    }
   };
 
   return (
@@ -28,6 +50,9 @@ const Register = () => {
           </h2>
           <p className="text-sm text-center text-gray-300">Join us today!</p>
         </div>
+
+        {error && <p className="text-red-400 text-center mb-3">{error}</p>}
+        {success && <p className="text-green-400 text-center mb-3">{success}</p>}
 
         <form onSubmit={handleSubmit} className="flex flex-col space-y-5">
           <div className="relative group">
