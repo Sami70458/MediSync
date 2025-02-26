@@ -1,14 +1,26 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = (e) => {
     e.preventDefault();
-    console.log("Logging in with:", email, password);
+    
+    // Simply store the current user info without verification
+    localStorage.setItem("currentUser", JSON.stringify({
+      email: email
+    }));
+    
+    // Set a dummy auth token
+    localStorage.setItem("authToken", `token-${Date.now()}`);
+    
+    // Immediately redirect to dashboard
+    navigate("/dashboard");
   };
 
   return (
@@ -56,14 +68,16 @@ const Login = () => {
                 type="checkbox"
                 id="remember"
                 className="w-4 h-4 rounded border-gray-600 bg-gray-700 focus:ring-pink-500 text-pink-500"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
               />
               <label htmlFor="remember" className="ml-2 text-gray-300">
                 Remember me
               </label>
             </div>
-            <a href="#" className="text-pink-400 hover:text-pink-300 transition duration-300">
+            <Link to="/forgot-password" className="text-pink-400 hover:text-pink-300 transition duration-300">
               Forgot Password?
-            </a>
+            </Link>
           </div>
 
           <button

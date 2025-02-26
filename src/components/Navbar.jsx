@@ -20,7 +20,6 @@ const Navbar = () => {
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo Section */}
         <div className="flex items-center space-x-4">
-          <img src="/assets/logo.svg" alt="Logo" className="w-10 h-10" />
           <h1 className="text-2xl font-bold text-pink-400 neon-glow">
             AI Diagnostic
           </h1>

@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock, FaCheck } from "react-icons/fa";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -17,27 +18,61 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    const response = await fetch("http://127.0.0.1:5000/signup", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+    // Basic validation
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
 
-    const data = await response.json();
-    if (response.ok) {
+    if (formData.password.length < 6) {
+      setError("Password should be at least 6 characters");
+      return;
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    // Store user data in localStorage (for demonstration purposes)
+    try {
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem("users") || "[]");
+      if (users.some(user => user.email === formData.email)) {
+        setError("Email already registered");
+        return;
+      }
+
+      // Add new user to users array
+      users.push({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password, // In a real app, you should NEVER store passwords in plain text
+      });
+
+      localStorage.setItem("users", JSON.stringify(users));
+      
+      // Set current user
+      localStorage.setItem("currentUser", JSON.stringify({
+        name: formData.name,
+        email: formData.email
+      }));
+
       setSuccess("Signup successful! Redirecting...");
+      
+      // Redirect after success
       setTimeout(() => {
-        window.location.href = "/login"; // Redirect after success
+        navigate("/login");
       }, 2000);
-    } else {
-      setError(data.error || "Signup failed");
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
     }
   };
 
