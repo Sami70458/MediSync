@@ -136,7 +136,8 @@ Run the Development Server
 
 ![image](https://github.com/user-attachments/assets/3fe7ff6a-d247-40ac-b85e-1ff31547e828)
 
-#Contribution
+# Contribution
+
 Contributions are welcome! If you'd like to contribute, please follow these steps:
 
 Fork the repository.
