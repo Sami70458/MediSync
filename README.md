@@ -136,6 +136,19 @@ Run the Development Server
 
 ![image](https://github.com/user-attachments/assets/3fe7ff6a-d247-40ac-b85e-1ff31547e828)
 
+#Contribution
+Contributions are welcome! If you'd like to contribute, please follow these steps:
+
+Fork the repository.
+
+Create a new branch (git checkout -b feature/your-feature-name).
+
+Commit your changes (git commit -m 'Add some feature').
+
+Push to the branch (git push origin feature/your-feature-name).
+
+Open a pull request.
+
 
 
 
